@@ -32,6 +32,26 @@ const addBook = (request, response) => {
     }
   );
 };
+if (process.env.NODE_ENV !== "production") {
+  const livereload = require("livereload");
+  const connectLivereload = require("connect-livereload");
+
+  // Reload browser when saving frontend code
+  const liveReloadServer = livereload.createServer();
+  liveReloadServer.watch(__dirname + "/public");
+
+  // Reload the page when the server has started
+  liveReloadServer.server.once("connection", () => {
+    setTimeout(() => {
+      liveReloadServer.refresh("/");
+    }, 100);
+  });
+
+  app.use(connectLivereload());
+}
+
+// Static files
+app.use(express.static("public"));
 
 app
   .route("/books")
