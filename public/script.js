@@ -16,7 +16,7 @@ const addBook = async (author, title) => {
     author: author,
     title: title,
   };
-  const response = await fetch(`http://localhost:3002/books`, {
+  const response = await fetch(`https://booksapinllc.herokuapp.com/books`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

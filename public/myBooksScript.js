@@ -2,9 +2,9 @@ let myBooks = [];
 const results = document.getElementById("results");
 
 const fetchMyBooks = async () => {
-  const response = await fetch(`http://localhost:3002/books`).then((res) =>
-    res.json()
-  );
+  const response = await fetch(
+    `https://booksapinllc.herokuapp.com/books`
+  ).then((res) => res.json());
 
   myBooks = response.data;
   //   console.log(myBooks);
