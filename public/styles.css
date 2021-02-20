@@ -6,6 +6,7 @@
   font-family: "Roboto", sans-serif;
   font-weight: 1px;
   color: grey;
+  box-sizing: border-box;
 }
 
 .container {
@@ -26,8 +27,11 @@
   font-size: 100px;
 }
 
-img {
-  width: 100px;
+button {
+  display: block;
+  width: 100%;
+  height: 30px;
+  margin-top: 15px;
 }
 
 nav {
@@ -37,12 +41,17 @@ nav {
   display: flex;
   background-color: grey;
   justify-content: flex-end;
+  top: 0px;
 }
 
 nav a {
   text-decoration: none;
   color: #aed4f5;
   padding-right: 50px;
+}
+
+main {
+  margin-top: 50px;
 }
 
 #image-list img {
@@ -80,8 +89,11 @@ li {
   margin: 12px;
   padding: 7px;
   border-width: 0.5mm;
-  display: flex;
   width: 800px;
+}
+
+.overallcontainer {
+  display: flex;
 }
 
 ul {
@@ -97,6 +109,8 @@ img {
   outline-style: solid;
   outline-width: 1px;
   margin-right: 20px;
+  width: 100px;
+  object-fit: contain;
 }
 
 input {

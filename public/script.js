@@ -6,10 +6,25 @@ const fetchBooks = async () => {
     return;
   }
 
-  response = await fetch(
+  const response = await fetch(
     `https://www.googleapis.com/books/v1/volumes?q=${searchTerm}&key=AIzaSyDNcGyk57dWBtic9VgXWNRzWOrf90PX7gU`
   ).then((res) => res.json());
   books = response.items || [];
+};
+const addBook = async (author, title) => {
+  const data = {
+    author: author,
+    title: title,
+  };
+  const response = await fetch(`http://localhost:3002/books`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+  console.log(response);
+  //   console.log(myBooks);
 };
 
 const results = document.getElementById("results");
@@ -28,7 +43,18 @@ const showBooks = async () => {
     const li = document.createElement("li");
     const h2 = document.createElement("h2");
     const p = document.createElement("p");
-    const div = document.createElement("div");
+    const titleanddescriptioncontainer = document.createElement("div");
+    const overallcontainer = document.createElement("div");
+    const button = document.createElement("button");
+    overallcontainer.classList.add("overallcontainer");
+    button.onclick = async () => {
+      await addBook(
+        element.volumeInfo.authors
+          ? element.volumeInfo.authors.join(", ")
+          : "Unknown Author",
+        element.volumeInfo.title
+      );
+    };
     if (
       element.volumeInfo.imageLinks &&
       element.volumeInfo.imageLinks.thumbnail
@@ -41,12 +67,15 @@ const showBooks = async () => {
       );
     }
     h2.innerText = element.volumeInfo.title;
+    button.innerText = "Add Book";
     p.innerText = element.volumeInfo.description || "No description";
-    li.appendChild(img);
-    div.appendChild(h2);
-    div.appendChild(p);
-    li.appendChild(div);
+    overallcontainer.appendChild(img);
+    titleanddescriptioncontainer.appendChild(h2);
+    titleanddescriptioncontainer.appendChild(p);
+    overallcontainer.appendChild(titleanddescriptioncontainer);
+    li.appendChild(overallcontainer);
     ul.appendChild(li);
+    li.appendChild(button);
   });
   results.appendChild(ul);
 };

@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { pool } = require("./config");
+const path = require("path");
 
 const app = express();
 
@@ -14,13 +15,13 @@ const getBooks = (request, response) => {
     if (error) {
       throw error;
     }
-    response.status(200).json(results.rows);
+    response.status(200).json({ data: results.rows });
   });
 };
 
 const addBook = (request, response) => {
   const { author, title } = request.body;
-
+  console.log(request.body);
   pool.query(
     "INSERT INTO books (author, title) VALUES ($1, $2)",
     [author, title],
@@ -59,6 +60,11 @@ app
   .get(getBooks)
   // POST endpoint
   .post(addBook);
+
+app.use("/mybooks", (req, res) => {
+  console.log(__dirname);
+  res.sendFile(path.join(__dirname, "/public/myBooks.html"));
+});
 
 // Start server
 app.listen(process.env.PORT || 3002, () => {
