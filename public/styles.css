@@ -1,10 +1,11 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap");
 
 * {
   margin: 0;
   padding: 0;
   font-family: "Roboto", sans-serif;
   font-weight: 1px;
+  color: grey;
 }
 
 .container {
@@ -21,8 +22,8 @@
 
 #title {
   text-align: center;
-  color: palevioletred;
   margin: 30px;
+  font-size: 100px;
 }
 
 img {
@@ -88,12 +89,19 @@ ul {
 }
 
 h2 {
-  font-size: 15px;
+  font-size: 20px;
   text-align: center;
+}
+
+img {
+  outline-style: solid;
+  outline-width: 1px;
+  margin-right: 20px;
 }
 
 input {
   margin-left: auto;
   margin-right: auto;
   display: block;
+  font-size: 20px;
 }
