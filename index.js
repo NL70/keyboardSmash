@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { pool } = require("./config");
 const path = require("path");
+const booksRouter = express.Router();
 
 const app = express();
 
@@ -10,18 +11,28 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-const getBooks = (request, response) => {
+booksRouter.get("/", (req, res) => {
   pool.query("SELECT * FROM books", (error, results) => {
     if (error) {
       throw error;
     }
-    response.status(200).json({ data: results.rows });
+    res.status(200).json({ data: results.rows });
   });
-};
+});
 
-const addBook = (request, response) => {
-  const { author, title } = request.body;
-  console.log(request.body);
+booksRouter.delete("/:bookId", (req, res) => {
+  const bookId = req.params.bookId;
+  pool.query("DELETE FROM books WHERE id = $1", [bookId], (error) => {
+    if (error) {
+      throw error;
+    }
+    res.status(204).send();
+  });
+});
+
+booksRouter.post("/", (req, res) => {
+  const { author, title } = req.body;
+  console.log(req.body);
   pool.query(
     "INSERT INTO books (author, title) VALUES ($1, $2)",
     [author, title],
@@ -29,10 +40,11 @@ const addBook = (request, response) => {
       if (error) {
         throw error;
       }
-      response.status(201).json({ status: "success", message: "Book added." });
+      res.status(201).json({ status: "success", message: "Book added." });
     }
   );
-};
+});
+
 if (process.env.NODE_ENV !== "production") {
   const livereload = require("livereload");
   const connectLivereload = require("connect-livereload");
@@ -54,12 +66,7 @@ if (process.env.NODE_ENV !== "production") {
 // Static files
 app.use(express.static("public"));
 
-app
-  .route("/books")
-  // GET endpoint
-  .get(getBooks)
-  // POST endpoint
-  .post(addBook);
+app.use("/books", booksRouter);
 
 app.use("/mybooks", (req, res) => {
   console.log(__dirname);
