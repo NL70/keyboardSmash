@@ -1,12 +1,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=B612+Mono&display=swap");
 
 * {
   margin: 0;
   padding: 0;
   font-family: "Roboto", sans-serif;
-  font-weight: 1px;
-  color: grey;
-  box-sizing: border-box;
+  color: black;
+}
+
+p {
+  flex: 0%;
+}
+
+h1 {
+  font-family: "B612 Mono", sans-serif;
+  font-size: 70px;
+}
+
+main {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 .container {
@@ -15,118 +29,121 @@
   text-align: center;
 }
 
-#results {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-}
-
 #title {
   text-align: center;
+  color: palevioletred;
   margin: 30px;
-  font-size: 100px;
-}
-
-button {
-  display: block;
-  width: 100%;
-  height: 30px;
-  margin-top: 15px;
-  background-color: rgb(82, 80, 80);
-  border: none;
-  outline: none;
-  color: white;
-  font-size: 20px;
-  border-radius: 10px;
 }
 
 nav {
   position: fixed;
   padding: 15px;
   width: 100%;
-  display: flex;
-  background-color: grey;
+  display: inline;
+  background-color: rgb(50, 49, 51);
   justify-content: flex-end;
-  top: 0px;
+  text-align: right;
 }
 
 nav a {
+  margin-right: 100px;
+  font-size: 20px;
   text-decoration: none;
-  color: #aed4f5;
-  padding-right: 50px;
-}
-
-main {
-  margin-top: 50px;
-}
-
-#image-list img {
-  width: 400px;
-}
-
-#image-list {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-}
-
-#iframe-container {
-  top: 1000px;
-  text-align: center;
-}
-
-#explanation {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#article {
-  display: block;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-li {
-  border-style: solid;
-  border-radius: 3mm;
-  margin: 12px;
-  padding: 7px;
-  border-width: 0.5mm;
-  width: 800px;
-}
-
-.overallcontainer {
-  display: flex;
+  color: aliceblue;
 }
 
 ul {
-  list-style-type: none;
+  width: 750px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
-h2 {
-  font-size: 20px;
+li {
+  display: flex;
+  align-self: stretch;
+  text-align: center;
+  margin: 20px;
+  padding: 25px;
+  list-style: none;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
+  border-color: grey;
+  box-shadow: 1px 1px 5px grey;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#buttons {
+  display: flex;
+  justify-content: space-between;
+  flex: 1%;
+  /* flex-grow: 50%; */
+}
+
+#add {
+  display: block;
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+  border: 1px solid rgb(50, 49, 51);
+  background-color: white;
+  font-size: 70px;
+  text-align: center;
+  position: fixed;
+  align-self: flex-end;
+  bottom: 10px;
+  right: 10px;
+}
+
+.action-button {
+  display: block;
+  height: 40px;
+  width: 80px;
+  border: 1px solid rgb(50, 49, 51);
+  background-color: white;
+  font-size: 15px;
   text-align: center;
 }
 
-img {
-  outline-style: solid;
-  outline-width: 1px;
-  margin-right: 20px;
-  width: 100px;
-  object-fit: contain;
-}
-
-input {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
+.random-button {
   font-size: 20px;
-  outline-width: 0;
+  position: fixed;
+  width: auto;
+  height: auto;
+  padding: 20px 40px;
+  top: 64px;
+  right: 10px;
 }
 
-.delete-button {
-  width: 300px;
+.action-button:hover {
+  background-color: rgb(50, 49, 51);
+  color: white;
+}
+
+.action-button:active {
+  color: rgb(50, 49, 51);
+}
+
+.action-button:disabled {
+  background-color: rgb(103, 100, 105);
+  color: white;
+}
+
+#add:active {
+  color: rgb(50, 49, 51);
+}
+
+#add:hover {
+  background-color: rgb(50, 49, 51);
+  color: white;
+}
+
+a:hover {
+  color: rgb(188, 188, 207);
+}
+
+nav:active {
+  color: rgb(50, 49, 51);
 }

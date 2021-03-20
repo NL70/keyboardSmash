@@ -1,88 +1,176 @@
-let books = [];
-let searchTerm = "";
+const results = document.getElementById("results");
+const add = document.getElementById("add");
+const random = document.getElementById("random");
+let keyboardSmash = [];
 
-const fetchBooks = async () => {
-  if (!searchTerm) {
-    return;
-  }
-
-  const response = await fetch(
-    `https://www.googleapis.com/books/v1/volumes?q=${searchTerm}&key=AIzaSyDNcGyk57dWBtic9VgXWNRzWOrf90PX7gU`
-  ).then((res) => res.json());
-  books = response.items || [];
-};
-const addBook = async (author, title) => {
+const addKeyboardSmash = async (contents) => {
   const data = {
-    author: author,
-    title: title,
+    contents: contents,
   };
-  const response = await fetch(`https://booksapinllc.herokuapp.com/books`, {
+  const response = await fetch(`http://localhost:5000/keyboardsmash`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
   }).then((res) => res.json());
-  console.log(response);
-  //   console.log(myBooks);
+  return response.data;
 };
 
-const results = document.getElementById("results");
-const input = document.querySelector("#search");
+const addToLibrary = async (id) => {
+  const data = {
+    ks_id: id,
+  };
+  const response = await fetch("http://localhost:5000/keyboardsmashlibrary", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+  return response.data;
+};
 
-const showBooks = async () => {
-  results.innerHTML = "";
-  await fetchBooks();
-  // getting the data
-  const searchedBooks = books.filter((book) =>
-    book.volumeInfo.title.toLowerCase().includes(searchTerm)
-  );
-  const ul = document.createElement("ul");
-  searchedBooks.forEach((element) => {
-    const img = document.createElement("img");
-    const li = document.createElement("li");
-    const h2 = document.createElement("h2");
-    const p = document.createElement("p");
-    const titleanddescriptioncontainer = document.createElement("div");
-    const overallcontainer = document.createElement("div");
-    const button = document.createElement("button");
-    overallcontainer.classList.add("overallcontainer");
-    button.onclick = async () => {
-      await addBook(
-        element.volumeInfo.authors
-          ? element.volumeInfo.authors.join(", ")
-          : "Unknown Author",
-        element.volumeInfo.title
-      );
-    };
-    if (
-      element.volumeInfo.imageLinks &&
-      element.volumeInfo.imageLinks.thumbnail
-    ) {
-      img.setAttribute("src", element.volumeInfo.imageLinks.thumbnail);
+function randomKeyboardSmash() {
+  const allLetters = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+  ];
+  const numOfLetters = Math.floor(Math.random() * 15 + 1);
+  const answer = [];
+  for (let i = 0; i < numOfLetters; i++) {
+    const randomLetter = Math.floor(Math.random() * 26);
+    const capsOrNot = Math.floor(Math.random() * 2 + 1);
+    if (capsOrNot === 1) {
+      answer.push(allLetters[randomLetter].toLowerCase());
     } else {
-      img.setAttribute(
-        "src",
-        "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png?format=jpg&quality=90&v=1530129081"
-      );
+      answer.push(allLetters[randomLetter]);
     }
-    h2.innerText = element.volumeInfo.title;
-    button.innerText = "Add Book";
-    p.innerText = element.volumeInfo.description || "No description";
-    overallcontainer.appendChild(img);
-    titleanddescriptioncontainer.appendChild(h2);
-    titleanddescriptioncontainer.appendChild(p);
-    overallcontainer.appendChild(titleanddescriptioncontainer);
-    li.appendChild(overallcontainer);
-    ul.appendChild(li);
-    li.appendChild(button);
-  });
-  results.appendChild(ul);
-};
-showBooks();
-
-input.addEventListener("input", updateValue);
-function updateValue(e) {
-  searchTerm = e.target.value.toLowerCase();
-  showBooks();
+  }
+  return answer.join("");
 }
+
+async function createKeyboardSmashCard(ul, data) {
+  const li = document.createElement("li");
+  const remove = document.createElement("button");
+  const edit = document.createElement("button");
+  const p = document.createElement("p");
+  const buttons = document.createElement("div");
+  const addToLibrary = document.createElement("button");
+  addToLibrary.setAttribute("class", "action-button");
+  addToLibrary.innerText = "Save";
+  remove.setAttribute("class", "action-button");
+  remove.innerText = "Delete";
+  buttons.setAttribute("id", "buttons");
+  edit.setAttribute("class", "action-button");
+  edit.innerText = "Edit";
+  buttons.appendChild(edit);
+  buttons.appendChild(remove);
+  buttons.appendChild(addToLibrary);
+  li.appendChild(buttons);
+  p.innerText = data.contents;
+  li.appendChild(p);
+
+  ul.appendChild(li);
+  remove.onclick = async () => await onDelete(data.id, li);
+  edit.onclick = async () => await onEdit(data.id, p);
+
+  if (data.is_saved) {
+    addToLibrary.setAttribute("disabled", "true");
+  }
+  addToLibrary.onclick = async () => {
+    addToLibrary.setAttribute("disabled", "true");
+    await onAddToLibrary(data.id);
+  };
+}
+const onDelete = async (id, li) => {
+  await deleteKeyboardSmash(id);
+  li.remove();
+};
+
+const onEdit = async (id, p) => {
+  const contents = prompt("KeyboardSmash");
+  await editKeyboardSmash(id, contents);
+  p.innerText = contents;
+};
+
+const onAddToLibrary = async (id) => {
+  await addToLibrary(id);
+};
+
+const fetchKeyboardsSmash = async () => {
+  const response = await fetch(
+    `http://localhost:5000/keyboardsmash`
+  ).then((res) => res.json());
+
+  keyboardSmash = response.data;
+};
+
+const deleteKeyboardSmash = async (id) => {
+  await fetch(`http://localhost:5000/keyboardsmash/${id}`, {
+    method: "DELETE",
+  });
+};
+
+const editKeyboardSmash = async (id, contents) => {
+  const data = {
+    contents: contents,
+  };
+  await fetch(`http://localhost:5000/keyboardsmash/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+};
+
+const showKeyboardsSmash = async () => {
+  await fetchKeyboardsSmash();
+  const ul = document.createElement("ul");
+  keyboardSmash.forEach((element) => {
+    createKeyboardSmashCard(ul, element);
+  });
+
+  results.appendChild(ul);
+
+  add.onclick = async () => {
+    const contents = prompt("KeyboardSmash");
+    if (contents) {
+      const data = await addKeyboardSmash(contents);
+      createKeyboardSmashCard(ul, data);
+    }
+  };
+
+  random.onclick = async () => {
+    const contents = randomKeyboardSmash();
+    const data = await addKeyboardSmash(contents);
+    createKeyboardSmashCard(ul, data);
+  };
+};
+
+showKeyboardsSmash();

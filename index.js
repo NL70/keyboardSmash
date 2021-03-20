@@ -3,47 +3,15 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { pool } = require("./config");
 const path = require("path");
-const booksRouter = express.Router();
+const e = require("express");
+const keyboardSmashRouter = express.Router();
+const libraryRouter = express.Router();
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-
-booksRouter.get("/", (req, res) => {
-  pool.query("SELECT * FROM books", (error, results) => {
-    if (error) {
-      throw error;
-    }
-    res.status(200).json({ data: results.rows });
-  });
-});
-
-booksRouter.delete("/:bookId", (req, res) => {
-  const bookId = req.params.bookId;
-  pool.query("DELETE FROM books WHERE id = $1", [bookId], (error) => {
-    if (error) {
-      throw error;
-    }
-    res.status(204).send();
-  });
-});
-
-booksRouter.post("/", (req, res) => {
-  const { author, title } = req.body;
-  console.log(req.body);
-  pool.query(
-    "INSERT INTO books (author, title) VALUES ($1, $2)",
-    [author, title],
-    (error) => {
-      if (error) {
-        throw error;
-      }
-      res.status(201).json({ status: "success", message: "Book added." });
-    }
-  );
-});
 
 if (process.env.NODE_ENV !== "production") {
   const livereload = require("livereload");
@@ -63,17 +31,141 @@ if (process.env.NODE_ENV !== "production") {
   app.use(connectLivereload());
 }
 
+// Get all
+
+keyboardSmashRouter.get("/", (req, res) => {
+  pool.query(
+    `SELECT id, contents, (CASE WHEN ks_id IS NULL THEN FALSE ELSE TRUE END) 
+    AS is_saved 
+    FROM keyboardsmash 
+    LEFT JOIN library 
+    ON keyboardsmash.id = library.ks_id
+    ORDER BY id;`,
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      res.status(200).json({ data: results.rows });
+    }
+  );
+});
+
+// Add new keyboardsmash
+
+keyboardSmashRouter.post("/", (req, res) => {
+  const { contents } = req.body;
+  if (contents) {
+    pool.query(
+      "INSERT INTO keyboardsmash (contents) VALUES ($1) RETURNING *;",
+
+      [contents],
+      (error, results) => {
+        if (error) {
+          throw error;
+        }
+        res.status(201).json({ data: results.rows[0] });
+      }
+    );
+  } else {
+    res.status(400);
+  }
+});
+
+keyboardSmashRouter.put("/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const { contents } = req.body;
+  if (contents) {
+    pool.query(
+      "UPDATE keyboardsmash SET contents = $1 WHERE id = $2;",
+      [contents, id],
+      (error, results) => {
+        if (error) {
+          throw error;
+        }
+        res.status(200).json({ data: results.rows[0] });
+      }
+    );
+  } else {
+    res.status(400);
+  }
+});
+
+keyboardSmashRouter.delete("/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  pool.query("DELETE FROM keyboardsmash WHERE id = $1", [id], (error) => {
+    if (error) {
+      throw error;
+    }
+    res.status(204).send();
+  });
+});
+
+libraryRouter.get("/", (req, res) => {
+  pool.query(
+    `SELECT ks_id, contents 
+    FROM library 
+    JOIN keyboardsmash 
+    ON library.ks_id = keyboardsmash.id 
+    ORDER BY ks_id`,
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      res.status(200).json({ data: results.rows });
+    }
+  );
+});
+
+libraryRouter.post("/", (req, res) => {
+  const ks_id = parseInt(req.body.ks_id);
+  if (ks_id) {
+    pool.query(
+      "INSERT INTO library (ks_id)  VALUES ($1) RETURNING *;",
+      [ks_id],
+      (error, results) => {
+        if (error) {
+          throw error;
+        }
+        res.status(201).json({ data: results.rows });
+      }
+    );
+  } else {
+    res.sendStatus(400);
+  }
+});
+
+libraryRouter.delete("/:ks_id", (req, res) => {
+  const ks_id = parseInt(req.params.ks_id);
+  if (ks_id) {
+    pool.query("DELETE FROM library WHERE ks_id = $1;", [ks_id], (error) => {
+      if (error) {
+        throw error;
+      }
+      res.sendStatus(204);
+    });
+  } else {
+    res.sendStatus(400);
+  }
+});
+
+// add a PUT method (/:id)
+// UPDATE (SQL command)
+// manually update innertext once updated (script.js)
+// server has to return updated contents (whole obj) for updating
+
 // Static files
 app.use(express.static("public"));
 
-app.use("/books", booksRouter);
+app.use("/keyboardsmash", keyboardSmashRouter);
+app.use("/keyboardsmashlibrary", libraryRouter);
 
-app.use("/mybooks", (req, res) => {
-  console.log(__dirname);
-  res.sendFile(path.join(__dirname, "/public/myBooks.html"));
+const publicPath = path.join(__dirname, "public");
+
+app.use("/library", (req, res) => {
+  res.sendFile(publicPath + "/library.html");
 });
 
 // Start server
-app.listen(process.env.PORT || 3002, () => {
+app.listen(process.env.PORT || 5000, () => {
   console.log(`Server listening`);
 });
