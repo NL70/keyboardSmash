@@ -7,13 +7,16 @@ const addKeyboardSmash = async (contents) => {
   const data = {
     contents: contents,
   };
-  const response = await fetch(`http://localhost:5000/keyboardsmash`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  }).then((res) => res.json());
+  const response = await fetch(
+    `https://keyboard-smash.herokuapp.com/keyboardsmash`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  ).then((res) => res.json());
   return response.data;
 };
 
@@ -21,13 +24,16 @@ const addToLibrary = async (id) => {
   const data = {
     ks_id: id,
   };
-  const response = await fetch("http://localhost:5000/keyboardsmashlibrary", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  }).then((res) => res.json());
+  const response = await fetch(
+    "https://keyboard-smash.herokuapp.com/keyboardsmashlibrary",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  ).then((res) => res.json());
   return response.data;
 };
 
@@ -124,14 +130,14 @@ const onAddToLibrary = async (id) => {
 
 const fetchKeyboardsSmash = async () => {
   const response = await fetch(
-    `http://localhost:5000/keyboardsmash`
+    `https://keyboard-smash.herokuapp.com/keyboardsmash`
   ).then((res) => res.json());
 
   keyboardSmash = response.data;
 };
 
 const deleteKeyboardSmash = async (id) => {
-  await fetch(`http://localhost:5000/keyboardsmash/${id}`, {
+  await fetch(`https://keyboard-smash.herokuapp.com/keyboardsmash/${id}`, {
     method: "DELETE",
   });
 };
@@ -140,7 +146,7 @@ const editKeyboardSmash = async (id, contents) => {
   const data = {
     contents: contents,
   };
-  await fetch(`http://localhost:5000/keyboardsmash/${id}`, {
+  await fetch(`https://keyboard-smash.herokuapp.com/keyboardsmash/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
