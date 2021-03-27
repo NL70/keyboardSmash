@@ -3,14 +3,18 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { pool } = require("./config");
 const path = require("path");
-const e = require("express");
+const cookieParser = require("cookie-parser");
 const keyboardSmashRouter = express.Router();
 const libraryRouter = express.Router();
+const crypto = require("crypto");
+
+const authTokens = {};
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(cors());
 
 if (process.env.NODE_ENV !== "production") {
@@ -30,6 +34,12 @@ if (process.env.NODE_ENV !== "production") {
 
   app.use(connectLivereload());
 }
+
+app.use((req, res, next) => {
+  const authToken = req.cookies["AuthToken"];
+  req.user = authTokens[authToken];
+  next();
+});
 
 // Get all
 
@@ -148,10 +158,51 @@ libraryRouter.delete("/:ks_id", (req, res) => {
   }
 });
 
-// add a PUT method (/:id)
-// UPDATE (SQL command)
-// manually update innertext once updated (script.js)
-// server has to return updated contents (whole obj) for updating
+const getHashedPassword = (password) => {
+  const sha256 = crypto.createHash("sha256");
+  const hash = sha256.update(password).digest("base64");
+  return hash;
+};
+
+const generateAuthToken = () => {
+  return crypto.randomBytes(30).toString("hex");
+};
+
+app.post("/login", (req, res, next) => {
+  const { email, password } = req.body;
+  const databasePassword = getHashedPassword(password);
+  pool.query(
+    "SELECT * FROM users WHERE email = $1",
+    [email],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      const user = results.rows[0];
+      if (user) {
+        if (user.password === databasePassword) {
+          const authToken = generateAuthToken();
+          authTokens[authToken] = user;
+          res.cookie("AuthToken", authToken);
+          res.redirect("library");
+        } else {
+          res.status(400).json({ data: "Incorrect password" });
+        }
+      } else {
+        pool.query(
+          "INSERT INTO users (email, password) VALUES ($1, $2)",
+          [email, databasePassword],
+          (error) => {
+            if (error) {
+              throw error;
+            }
+            res.status(200).json({ data: "Signup success" });
+          }
+        );
+      }
+    }
+  );
+});
 
 // Static files
 app.use(express.static("public"));
@@ -162,7 +213,11 @@ app.use("/keyboardsmashlibrary", libraryRouter);
 const publicPath = path.join(__dirname, "public");
 
 app.use("/library", (req, res) => {
-  res.sendFile(publicPath + "/library.html");
+  if (req.user) {
+    res.sendFile(publicPath + "/library.html");
+  } else {
+    res.sendFile(publicPath + "/login.html");
+  }
 });
 
 // Start server

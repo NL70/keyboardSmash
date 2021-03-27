@@ -12,6 +12,14 @@ p {
   flex: 0%;
 }
 
+input {
+  font-size: 20px;
+  border-radius: 3px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  width: 480px;
+}
+
 h1 {
   font-family: "B612 Mono", sans-serif;
   font-size: 70px;
@@ -97,7 +105,8 @@ li {
   right: 10px;
 }
 
-.action-button {
+.action-button,
+.login-button {
   display: block;
   height: 40px;
   width: 80px;
@@ -146,4 +155,19 @@ a:hover {
 
 nav:active {
   color: rgb(50, 49, 51);
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+.login-label {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.login-button {
+  margin-top: 15px;
 }
