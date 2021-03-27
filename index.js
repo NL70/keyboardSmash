@@ -190,13 +190,17 @@ app.post("/login", (req, res, next) => {
         }
       } else {
         pool.query(
-          "INSERT INTO users (email, password) VALUES ($1, $2)",
+          "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *",
           [email, databasePassword],
-          (error) => {
+          (error, results) => {
             if (error) {
               throw error;
             }
-            res.status(200).json({ data: "Signup success" });
+            const user = results.rows[0];
+            const authToken = generateAuthToken();
+            authTokens[authToken] = user;
+            res.cookie("AuthToken", authToken);
+            res.redirect("library");
           }
         );
       }
