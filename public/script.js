@@ -3,12 +3,13 @@ const add = document.getElementById("add");
 const random = document.getElementById("random");
 let user;
 let keyboardSmash = [];
+const apiURL = "https://keyboard-smash.herokuapp.com";
 
 const addKeyboardSmash = async (contents) => {
   const data = {
     contents: contents,
   };
-  const response = await fetch(`http://localhost:5000/keyboardsmash`, {
+  const response = await fetch(`${apiurl}/keyboardsmash`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,7 +23,7 @@ const addToLibrary = async (id) => {
   const data = {
     ks_id: id,
   };
-  const response = await fetch("http://localhost:5000/keyboardsmashlibrary", {
+  const response = await fetch(`${apiurl}/keyboardsmashlibrary`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -132,22 +133,22 @@ const onAddToLibrary = async (id) => {
 };
 
 const fetchKeyboardsSmash = async () => {
-  const response = await fetch(
-    `http://localhost:5000/keyboardsmash`
-  ).then((res) => res.json());
+  const response = await fetch(`${apiurl}/keyboardsmash`).then((res) =>
+    res.json()
+  );
 
   keyboardSmash = response.data;
 };
 
 const fetchUser = async () => {
   const response = await fetch(`
-  http://localhost:5000/user
+  ${apiurl}/user
   `).then((res) => res.json());
   user = response.data.user;
 };
 
 const deleteKeyboardSmash = async (id) => {
-  await fetch(`http://localhost:5000/keyboardsmash/${id}`, {
+  await fetch(`${apiurl}/keyboardsmash/${id}`, {
     method: "DELETE",
   });
 };
@@ -156,7 +157,7 @@ const editKeyboardSmash = async (id, contents) => {
   const data = {
     contents: contents,
   };
-  await fetch(`http://localhost:5000/keyboardsmash/${id}`, {
+  await fetch(`${apiurl}/keyboardsmash/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
