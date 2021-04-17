@@ -4,7 +4,8 @@ CREATE TABLE keyboardsmash (
 );
 
 CREATE TABLE library (
-  ks_id int PRIMARY KEY REFERENCES keyboardsmash
+  ks_id int PRIMARY KEY REFERENCES keyboardsmash,
+  owner_id int NOT NULL REFERENCES users(id) 
 );
 
 CREATE TABLE users (

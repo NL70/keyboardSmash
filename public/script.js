@@ -1,22 +1,20 @@
 const results = document.getElementById("results");
 const add = document.getElementById("add");
 const random = document.getElementById("random");
+let user;
 let keyboardSmash = [];
 
 const addKeyboardSmash = async (contents) => {
   const data = {
     contents: contents,
   };
-  const response = await fetch(
-    `https://keyboard-smash.herokuapp.com/keyboardsmash`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  ).then((res) => res.json());
+  const response = await fetch(`http://localhost:5000/keyboardsmash`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
   return response.data;
 };
 
@@ -24,16 +22,13 @@ const addToLibrary = async (id) => {
   const data = {
     ks_id: id,
   };
-  const response = await fetch(
-    "https://keyboard-smash.herokuapp.com/keyboardsmashlibrary",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  ).then((res) => res.json());
+  const response = await fetch("http://localhost:5000/keyboardsmashlibrary", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
   return response.data;
 };
 
@@ -81,10 +76,8 @@ function randomKeyboardSmash() {
 }
 
 async function createKeyboardSmashCard(ul, data) {
-  const li = document.createElement("li");
   const remove = document.createElement("button");
   const edit = document.createElement("button");
-  const p = document.createElement("p");
   const buttons = document.createElement("div");
   const addToLibrary = document.createElement("button");
   addToLibrary.setAttribute("class", "action-button");
@@ -95,13 +88,20 @@ async function createKeyboardSmashCard(ul, data) {
   edit.setAttribute("class", "action-button");
   edit.innerText = "Edit";
   buttons.appendChild(edit);
-  buttons.appendChild(remove);
+  // buttons.appendChild(remove);
   buttons.appendChild(addToLibrary);
-  li.appendChild(buttons);
+  const p = document.createElement("p");
+  const li = document.createElement("li");
+
   p.innerText = data.contents;
   li.appendChild(p);
 
   ul.appendChild(li);
+
+  if (user) {
+    li.appendChild(buttons);
+  }
+
   remove.onclick = async () => await onDelete(data.id, li);
   edit.onclick = async () => await onEdit(data.id, p);
 
@@ -113,6 +113,9 @@ async function createKeyboardSmashCard(ul, data) {
     await onAddToLibrary(data.id);
   };
 }
+
+// -----------------------------------------------------------------------------------------------
+
 const onDelete = async (id, li) => {
   await deleteKeyboardSmash(id);
   li.remove();
@@ -130,14 +133,21 @@ const onAddToLibrary = async (id) => {
 
 const fetchKeyboardsSmash = async () => {
   const response = await fetch(
-    `https://keyboard-smash.herokuapp.com/keyboardsmash`
+    `http://localhost:5000/keyboardsmash`
   ).then((res) => res.json());
 
   keyboardSmash = response.data;
 };
 
+const fetchUser = async () => {
+  const response = await fetch(`
+  http://localhost:5000/user
+  `).then((res) => res.json());
+  user = response.data.user;
+};
+
 const deleteKeyboardSmash = async (id) => {
-  await fetch(`https://keyboard-smash.herokuapp.com/keyboardsmash/${id}`, {
+  await fetch(`http://localhost:5000/keyboardsmash/${id}`, {
     method: "DELETE",
   });
 };
@@ -146,7 +156,7 @@ const editKeyboardSmash = async (id, contents) => {
   const data = {
     contents: contents,
   };
-  await fetch(`https://keyboard-smash.herokuapp.com/keyboardsmash/${id}`, {
+  await fetch(`http://localhost:5000/keyboardsmash/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -156,7 +166,16 @@ const editKeyboardSmash = async (id, contents) => {
 };
 
 const showKeyboardsSmash = async () => {
+  await fetchUser();
   await fetchKeyboardsSmash();
+
+  if (!user) {
+    const addButton = document.getElementById("add");
+    const randomButton = document.getElementById("random");
+    randomButton.remove();
+    addButton.remove();
+  }
+
   const ul = document.createElement("ul");
   keyboardSmash.forEach((element) => {
     createKeyboardSmashCard(ul, element);
