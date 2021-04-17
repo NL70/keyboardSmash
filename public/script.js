@@ -9,7 +9,7 @@ const addKeyboardSmash = async (contents) => {
   const data = {
     contents: contents,
   };
-  const response = await fetch(`${apiurl}/keyboardsmash`, {
+  const response = await fetch(`${apiURL}/keyboardsmash`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -23,7 +23,7 @@ const addToLibrary = async (id) => {
   const data = {
     ks_id: id,
   };
-  const response = await fetch(`${apiurl}/keyboardsmashlibrary`, {
+  const response = await fetch(`${apiURL}/keyboardsmashlibrary`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -133,7 +133,7 @@ const onAddToLibrary = async (id) => {
 };
 
 const fetchKeyboardsSmash = async () => {
-  const response = await fetch(`${apiurl}/keyboardsmash`).then((res) =>
+  const response = await fetch(`${apiURL}/keyboardsmash`).then((res) =>
     res.json()
   );
 
@@ -142,13 +142,13 @@ const fetchKeyboardsSmash = async () => {
 
 const fetchUser = async () => {
   const response = await fetch(`
-  ${apiurl}/user
+  ${apiURL}/user
   `).then((res) => res.json());
   user = response.data.user;
 };
 
 const deleteKeyboardSmash = async (id) => {
-  await fetch(`${apiurl}/keyboardsmash/${id}`, {
+  await fetch(`${apiURL}/keyboardsmash/${id}`, {
     method: "DELETE",
   });
 };
@@ -157,7 +157,7 @@ const editKeyboardSmash = async (id, contents) => {
   const data = {
     contents: contents,
   };
-  await fetch(`${apiurl}/keyboardsmash/${id}`, {
+  await fetch(`${apiURL}/keyboardsmash/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

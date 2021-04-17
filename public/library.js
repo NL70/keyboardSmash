@@ -2,7 +2,7 @@ const results = document.getElementById("results");
 const apiURL = "https://keyboard-smash.herokuapp.com";
 
 const fetchLibrary = async () => {
-  const response = await fetch(`${apiurl}/keyboardsmashlibrary`).then((res) =>
+  const response = await fetch(`${apiURL}/keyboardsmashlibrary`).then((res) =>
     res.json()
   );
 
@@ -28,7 +28,7 @@ const onDelete = async (li, ks_id) => {
 };
 
 const deleteFromLibrary = async (ks_id) => {
-  await fetch(`${apiurl}/keyboardsmashlibrary/${ks_id}`, {
+  await fetch(`${apiURL}/keyboardsmashlibrary/${ks_id}`, {
     method: "DELETE",
   });
 };
